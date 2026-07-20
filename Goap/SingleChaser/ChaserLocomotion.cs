@@ -88,8 +88,10 @@ namespace Squad
 
 
         /// <summary>
+        /// 추격자 주변의 무작위 새로운 지점을 생성하여
+        /// 추격자가 해당 지점으로 이동하도록 하는 함수.
         /// 배회할 지점이 없으면 새로 좌표를 정해서 return하고,
-        /// 이미 있으면 있던 좌표를 return하는 함수
+        /// 이미 있으면 있던 좌표를 return한다
         /// </summary>
         /// <returns></returns>
         public Vector3 GetWanderTarget()
