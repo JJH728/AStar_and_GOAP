@@ -88,7 +88,7 @@ namespace Squad
             {
                 bool done = _currentAction.Perform(_ctx);
                 if (done)
-                    _currentAction = (_plan != null && _plan.Count > 0) ? _plan.Dequeue() : null;
+                    DoNextAction();
             }
         }
 
@@ -100,7 +100,7 @@ namespace Squad
             if (goal == null) { _plan = null; _currentAction = null; return; }
 
             _plan = GoapPlanner.Plan(_actions, state, goal, _ctx);
-            _currentAction = (_plan != null && _plan.Count > 0) ? _plan.Dequeue() : null;
+            DoNextAction();
         }
 
         /// <summary>
@@ -146,9 +146,10 @@ namespace Squad
         }
 
         /// <summary>
-        /// Quick "is this goal even worth planning for" check based on the
-        /// entry-condition facts. Keeps the chaser from trying to chase with no
-        /// player or investigate with no sound.
+        /// 좇을 이유가 있는 Goal인가?
+        /// Player가 보이지 않는 상황에서 CatchPlayer를 목표로 잡아봤자
+        /// 어차피 달성하지 못하기 때문에
+        /// 이런 상황의 Goal이 선택되는 걸 사전에 방지하는 필터
         /// </summary>
         private bool GoalIsRelevant(Goal g, WorldState s)
         {
@@ -158,8 +159,7 @@ namespace Squad
                     return Fact(s, "playerVisible");
                 case "InvestigateSound":
                     return Fact(s, "heardSound");
-                case "Wander":
-                    return true;   // always relevant
+                case "Wander": // State에 관계없이 항상 이유 있는 행동
                 default:
                     return true;
             }
@@ -167,6 +167,11 @@ namespace Squad
 
         private static bool Fact(WorldState s, string key)
             => s.Facts.TryGetValue(key, out bool v) && v;
+
+        private void DoNextAction()
+        {
+            _currentAction = (_plan != null && _plan.Count > 0) ? _plan.Dequeue() : null;
+        }
 
         // ---- Debug visualization ------------------------------------------
 
