@@ -41,6 +41,7 @@ namespace Squad
 
         private void Awake()
         {
+            // 기존에 있던 BlackBoard Instance 제거
             if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
@@ -54,14 +55,15 @@ namespace Squad
             if (!PlayerCurrentlyVisible)
                 TimeSinceLastSeen += Time.deltaTime;
 
-            // Decay alert over time once the player is lost.
+            // 시간이 지남에 따라 경계 상태를 서서히 품
+            // 
             if (Alert == AlertLevel.Alerted && TimeSinceLastSeen > 12f)
                 Alert = AlertLevel.Suspicious;
             if (Alert == AlertLevel.Suspicious && TimeSinceLastSeen > 25f)
                 Alert = AlertLevel.Calm;
         }
 
-        /// <summary>Called by any chaser's perception when it sees the player.</summary>
+        /// <summary>플레이어가 시야에 들어왔을 때</summary>
         public void ReportSighting(Vector3 playerPos)
         {
             LastKnownPlayerPos = playerPos;
@@ -70,12 +72,12 @@ namespace Squad
             Alert = AlertLevel.Alerted;
         }
 
-        /// <summary>Called when a chaser that was seeing the player loses sight.</summary>
+        /// <summary>플레이어가 시야에서 사라졌을 때</summary>
         public void ReportLostSight()
         {
             PlayerCurrentlyVisible = false;
-            // LastKnownPlayerPos is kept — this is what enables "search the last
-            // place we saw them" behavior across the whole squad.
+            // LastKnownPlayerPos는 지우지 않고 남겨두어
+            // 시야에서 사라져도 잠시동안은 주변을 수색하도록 한다.
         }
 
         /// <summary>
@@ -88,7 +90,8 @@ namespace Squad
         /// </summary>
         public void ReportSound(Vector3 soundPos)
         {
-            if (Alert == AlertLevel.Calm) Alert = AlertLevel.Suspicious;
+            if (Alert == AlertLevel.Calm)
+                Alert = AlertLevel.Suspicious;
             HasSound = true;
             LastSoundPos = soundPos;
             if (!PlayerCurrentlyVisible)
