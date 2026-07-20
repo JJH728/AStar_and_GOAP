@@ -165,9 +165,15 @@ namespace Squad
             }
         }
 
+        /// <summary>
+        /// GoalIsRelevant 함수를 보조하는 함수.
+        /// </summary>
         private static bool Fact(WorldState s, string key)
             => s.Facts.TryGetValue(key, out bool v) && v;
 
+        /// <summary>
+        /// Update, Replan 함수를 보조하는 함수.
+        /// </summary>
         private void DoNextAction()
         {
             _currentAction = (_plan != null && _plan.Count > 0) ? _plan.Dequeue() : null;
