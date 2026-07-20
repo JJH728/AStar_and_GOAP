@@ -61,9 +61,9 @@ namespace Squad
 
             // 시간이 지남에 따라 경계 상태를 서서히 품
             // 
-            if (Alert == AlertLevel.Alerted && TimeSinceLastSeen > 12f)
+            if (Alert == AlertLevel.Alerted && TimeSinceLastSeen > AlertedToSuspiciusTime)
                 Alert = AlertLevel.Suspicious;
-            if (Alert == AlertLevel.Suspicious && TimeSinceLastSeen > 25f)
+            if (Alert == AlertLevel.Suspicious && TimeSinceLastSeen > SuspiciousToCalmTime)
                 Alert = AlertLevel.Calm;
         }
 
