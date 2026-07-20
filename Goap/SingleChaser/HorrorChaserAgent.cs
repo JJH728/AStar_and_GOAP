@@ -174,16 +174,15 @@ namespace Squad
         /// <summary>
         /// Update, Replan 함수를 보조하는 함수.
         /// </summary>
-        private void DoNextAction()
-        {
-            _currentAction = (_plan != null && _plan.Count > 0) ? _plan.Dequeue() : null;
-        }
+        private void DoNextAction() => _currentAction =
+        (_plan != null && _plan.Count > 0) ? _plan.Dequeue() : null;
 
         // ---- Debug visualization ------------------------------------------
 
         private void OnDrawGizmos()
         {
-            if (!Application.isPlaying) return;
+            if (!Application.isPlaying)
+                return;
 
             // Draw current goal/action as labels would need Handles (editor-only);
             // here we just draw reach radii and a line to the current target so
