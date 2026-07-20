@@ -104,10 +104,7 @@ namespace Squad
         }
 
         /// <summary>
-        /// Build the current facts. Detection facts come from the shared
-        /// blackboard, so if the detection system flips playerVisible mid-chase
-        /// (e.g. the player crossed into the other dimension), the very next
-        /// replan will drop CatchPlayer and fall to InvestigateSound or Wander.
+        /// 현재 추격자 입장에서의 WorldState 생성
         /// </summary>
         private WorldState BuildWorldState()
         {
@@ -129,19 +126,21 @@ namespace Squad
             return s;
         }
 
-        /// <summary>Highest-priority goal whose desired state isn't already met.</summary>
+        /// <summary>달성하지 않은 Goal 중 가장 우선순위 높은 Goal 선택</summary>
         private Goal SelectGoal(WorldState state)
         {
             Goal best = null;
             foreach (Goal g in _goals)
             {
-                if (state.Matches(g.Desired)) continue;   // already satisfied
-                // Only consider a goal if the planner could plausibly reach it:
-                // cheap pre-filter avoids planning for InvestigateSound when no
-                // sound exists, etc. (The planner would fail anyway, but this
-                // skips the wasted search.)
-                if (!GoalIsRelevant(g, state)) continue;
-                if (best == null || g.Priority > best.Priority) best = g;
+                // 이미 이룬 Goal은 패스
+                if (state.Matches(g.Desired))
+                    continue;
+                // 관련 없는 Goal은 패스
+                if (!GoalIsRelevant(g, state))
+                    continue;
+                // 우선순위 비교하여 높은 우선순위의 Goal로 갱신
+                if (best == null || g.Priority > best.Priority)
+                    best = g;
             }
             return best;
         }
