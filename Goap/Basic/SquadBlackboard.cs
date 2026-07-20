@@ -39,9 +39,8 @@ namespace Squad
         public bool HasSound { get; private set; }
         public Vector3 LastSoundPos { get; private set; }
 
-        // Role claims: which chaser claimed which role this planning cycle.
-        // Lets one chaser "direct chase" while another "claims an ambush spot",
-        // preventing everyone from doing the same thing.
+        // 추격, 매복 등등의 역할을 나누고, 각 추격자들이 일제히 같은 행동을 하지 않도록 조율
+        // <(역할), (추격자 번호)> 타입의 Dictionary로 역할을 현재 수행 중인 추격자를 기록
         private readonly Dictionary<string, int> _roleClaims = new();
 
         private void Awake()
@@ -99,6 +98,8 @@ namespace Squad
                 Alert = AlertLevel.Suspicious;
             HasSound = true;
             LastSoundPos = soundPos;
+            // 소리가 들렸지만 플레이어는 보이지 않을 때
+            // 소리가 들린 위치를 플레이어가 2초 전(조금 전) 있었을 위치라고 추정
             if (!PlayerCurrentlyVisible)
             {
                 LastKnownPlayerPos = soundPos;
@@ -106,7 +107,7 @@ namespace Squad
             }
         }
 
-        /// <summary>Called by SearchSoundArea once a sound has been investigated.</summary>
+        /// <summary>소리에 대한 조사를 끝냈을 때</summary>
         public void ClearSound() => HasSound = false;
 
         // --- Role arbitration ---
