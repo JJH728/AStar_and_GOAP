@@ -76,7 +76,9 @@ namespace Squad
         {
             _replanTimer -= Time.deltaTime;
 
-            // Replan when the timer elapses, or when we've run out of plan.
+            // replan 주기가 돌았거나
+            // plan을 세운 적이 없거나 모두 수행했고 수행할 Action이 없으면
+            // replan하고 타이머를 초기화
             if (_replanTimer <= 0f || (_plan == null || _plan.Count == 0) && _currentAction == null)
             {
                 Replan();
@@ -97,7 +99,12 @@ namespace Squad
             WorldState state = BuildWorldState();
             Goal goal = SelectGoal(state);
             CurrentGoalName = goal?.Name ?? "-";
-            if (goal == null) { _plan = null; _currentAction = null; return; }
+            if (goal == null)
+            {
+                _plan = null;
+                _currentAction = null;
+                return;
+            }
 
             _plan = GoapPlanner.Plan(_actions, state, goal, _ctx);
             DoNextAction();
@@ -173,6 +180,7 @@ namespace Squad
 
         /// <summary>
         /// Update, Replan 함수를 보조하는 함수.
+        /// _plan Queue에서 하나를 뽑아 수행할 Action에 저장
         /// </summary>
         private void DoNextAction() => _currentAction =
         (_plan != null && _plan.Count > 0) ? _plan.Dequeue() : null;
