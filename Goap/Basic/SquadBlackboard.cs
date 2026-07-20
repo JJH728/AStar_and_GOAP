@@ -14,6 +14,11 @@ namespace Squad
     /// </summary>
     public class SquadBlackboard : MonoBehaviour
     {
+        [SerializeField]
+        private float AlertedToSuspiciusTime = 12f;
+        [SerializeField]
+        private float SuspiciousToCalmTime = 25f;
+        
         public static SquadBlackboard Instance { get; private set; }
 
         public enum AlertLevel { Calm, Suspicious, Alerted }
