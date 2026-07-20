@@ -114,8 +114,10 @@ namespace Squad
         // A chaser tries to claim a role; returns true if it got it.
         public bool TryClaimRole(string role, int chaserId)
         {
+            // 역할을 선점한 다른 추격자가 이미 존재
             if (_roleClaims.TryGetValue(role, out int owner) && owner != chaserId)
                 return false;
+            // 이 추격자에게 역할 부여
             _roleClaims[role] = chaserId;
             return true;
         }
