@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 길찾기 GOAP가 정상적으로 작동하는지 테스트하기 위한 추격자 이동 코드.
 namespace Astar3D
 {
     // 이 스크립트를 오브젝트에 추가하면
