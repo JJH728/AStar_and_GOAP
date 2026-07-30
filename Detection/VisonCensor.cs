@@ -75,5 +75,37 @@ namespace Squad
 
         return true;
     }
-}
+
+    private void UpdateVision()
+    {
+        Collider[] candidates = FindTargetsInViewDistance();
+
+        Transform bestTarget = null;
+        float bestDistance = float.MaxValue;
+
+        foreach (Collider candidate in candidates)
+        {
+            Transform target = candidate.transform;
+
+            if (!CanSeeTarget(target))
+                continue;
+
+            float distance = Vector3.Distance(transform.position, target.position);
+
+            if (distance < bestDistance)
+            {
+                bestDistance = distance;
+                bestTarget = target;
+            }
+        }
+
+        if (bestTarget != null)
+        {
+            SetCurrentTarget(bestTarget);
+        }
+        else
+        {
+            ClearCurrentTarget();
+        }
+    }
 }
