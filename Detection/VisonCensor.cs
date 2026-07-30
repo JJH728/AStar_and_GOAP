@@ -23,14 +23,13 @@ namespace Squad
     [SerializeField] private LayerMask obstacleLayer;
 
     // 1. 플레이어가 감지 거리 안에 있는가?
-    private Collider[] FindTargetsInViewDistance()
+    private bool IsInViewDistance(Transform target)
     {
-        return Physics.OverlapSphere(
-            transform.position,
-            viewDistance,
-            targetLayer,
-            QueryTriggerInteraction.Ignore
-        );
+        Vector3 flatSelf = transform.position;
+        Vector3 flatTarget = target.position;
+        flatSelf.y = flatTarget.y = 0f;
+
+        return Vector3.Distance(flatSelf, flatTarget) <= viewDistance;
     }
 
     // 2. 플레이어가 적의 시야각 안에 있는가?
@@ -76,6 +75,7 @@ namespace Squad
         return true;
     }
 
+    // 1 ~ 3 조건 검사를 한 흐름으로
     private void UpdateVision()
     {
         Collider[] candidates = FindTargetsInViewDistance();
