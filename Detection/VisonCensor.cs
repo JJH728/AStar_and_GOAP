@@ -22,6 +22,8 @@ namespace Squad
     // 장애물의 Layer
     [SerializeField] private LayerMask obstacleLayer;
 
+    private bool visibleJustBefore;
+
     // 1. 플레이어가 감지 거리 안에 있는가?
     private bool IsInViewDistance(Transform target)
     {
@@ -76,36 +78,22 @@ namespace Squad
     }
 
     // 1 ~ 3 조건 검사를 한 흐름으로
-    private void UpdateVision()
+    private void DetectVision(Transform target)
     {
-        Collider[] candidates = FindTargetsInViewDistance();
+        bool canSee = IsInViewDistance(target)
+        && IsInViewAngle(target)
+        && HasLineOfSight(target);
 
-        Transform bestTarget = null;
-        float bestDistance = float.MaxValue;
-
-        foreach (Collider candidate in candidates)
-        {
-            Transform target = candidate.transform;
-
-            if (!CanSeeTarget(target))
-                continue;
-
-            float distance = Vector3.Distance(transform.position, target.position);
-
-            if (distance < bestDistance)
-            {
-                bestDistance = distance;
-                bestTarget = target;
-            }
-        }
-
-        if (bestTarget != null)
-        {
-            SetCurrentTarget(bestTarget);
-        }
+        if (canSee)
+            // 플레이어가 시야에 있으면, 매번 호출하여 그 위치를 업데이트
+            SquadBlackboard.Instance.ReportSighting(target.position);
         else
-        {
-            ClearCurrentTarget();
-        }
+
+            if (visibleJustBefore)
+                // 플레이어가 시야에서 사라지면, 단 한번만 호출하여 위치 제거
+                SquadBlackboard.Instance.ReportLostSight();
+
+        // 이번 실행의 결과를 기억
+        visibleJustBefore = canSee;
     }
 }
