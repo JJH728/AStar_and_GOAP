@@ -16,7 +16,7 @@ namespace Squad
             Name = name;
             Radius = radius;
             Duration = duration;
-            AlertLevel = alertLevel;\
+            AlertLevel = alertLevel;
             CanCrossDimension = canCrossDimension;
         }
     }
