@@ -92,10 +92,9 @@ namespace Squad
         /// this sound at all — e.g. a generator sound is reported to chasers in
         /// both dimensions, a footstep only to chasers in the player's dimension.
         /// </summary>
-        public void ReportSound(Vector3 soundPos)
+        public void ReportSound(Vector3 soundPos, Sound sound)
         {
-            if (Alert == AlertLevel.Calm)
-                Alert = AlertLevel.Suspicious;
+            Alert = sound.alertLevel;
             HasSound = true;
             LastSoundPos = soundPos;
             // 소리가 들렸지만 플레이어는 보이지 않을 때
