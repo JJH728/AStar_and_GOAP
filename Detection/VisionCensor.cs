@@ -25,10 +25,23 @@ namespace Squad
         [SerializeField] private LayerMask obstacleLayer;
         // 플레이어
         [SerializeField] private Transform player;
+        [Tooltip("detection을 얼마 정도의 주기로 하는가")]
+        [SerializeField] private float detectInterval = 0.4f;
+
+        private float _detectTimer;
 
         private void Update()
         {
-            DetectVision(player);
+            if (player == null)
+                return;
+            
+            _detectTimer -= Time.deltaTime;
+
+            if (_detectTimer <= 0)
+            {
+                DetectVision(player);
+                _detectTimer = detectInterval;
+            }
         }
 
         // DetectVision을 한번 수행한 후, 해당 결과를 다음 수행까지 기억하는 역할
