@@ -185,19 +185,17 @@ namespace Squad
         private void DoNextAction() => _currentAction =
         (_plan != null && _plan.Count > 0) ? _plan.Dequeue() : null;
 
-        // ---- Debug visualization ------------------------------------------
-
+        // 시각화 함수
         private void OnDrawGizmos()
         {
             if (!Application.isPlaying)
                 return;
 
-            // Draw current goal/action as labels would need Handles (editor-only);
-            // here we just draw reach radii and a line to the current target so
-            // you can SEE what the chaser is doing during play.
+            // 적에게 잡히면 게임 오버되는 반경을 노란 구 형태로 표시
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, CatchRadius);
 
+            // 소리가 발생한 곳을 시안색 구로 표시, 적과 선으로 연결
             if (_ctx != null && _ctx.Blackboard != null && _ctx.Blackboard.HasSound)
             {
                 Gizmos.color = Color.cyan;
