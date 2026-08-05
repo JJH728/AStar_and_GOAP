@@ -5,18 +5,24 @@ namespace Squad
 {
     public class Sound
     {
+        // 소리의 이름 (어떤 소리인지)
         public string Name {get;}
+        // 소리가 들릴 반경
         public float Radius {get;}
+        // 소리의 지속시간
         public float Duration {get;}
-        public SquadBlackboard.AlertLevel AlertLevel {get;}
+        // 소리를 들은 적이 취할 Alert 단계
+        public SquadBlackboard.AlertLevel Alert {get;}
+        // 소리가 차원을 초월하는지
         public bool CanCrossDimension {get;}
 
-        public Sound(string name, float radius, float duration, SqaudBlackboard.AlertLevel alertLevel, bool canCrossDimension)
+        public Sound(string name, float radius, float duration, 
+        SqaudBlackboard.AlertLevel alert, bool canCrossDimension)
         {
             Name = name;
             Radius = radius;
             Duration = duration;
-            AlertLevel = alertLevel;
+            Alert = alert;
             CanCrossDimension = canCrossDimension;
         }
     }

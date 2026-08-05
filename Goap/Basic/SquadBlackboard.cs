@@ -94,7 +94,9 @@ namespace Squad
         /// </summary>
         public void ReportSound(Vector3 soundPos, Sound sound)
         {
-            Alert = sound.alertLevel;
+            // 소리가 유발하는 경계가 현재 경계보다 높다면 경계를 격상
+            if (sound.Alert > Alert)
+                Alert = sound.Alert;
             HasSound = true;
             LastSoundPos = soundPos;
             // 소리가 들렸지만 플레이어는 보이지 않을 때
