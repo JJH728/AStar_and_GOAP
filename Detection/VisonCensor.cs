@@ -22,6 +22,7 @@ namespace Squad
     // 장애물의 Layer
     [SerializeField] private LayerMask obstacleLayer;
 
+    // DetectVision을 한번 수행한 후, 해당 결과를 다음 수행까지 기억하는 역할
     private bool visibleJustBefore;
 
     // 1. 플레이어가 감지 거리 안에 있는가?
