@@ -1,7 +1,6 @@
 using UnityEngine;
-using Systems.Collections.Generic;
 
-namespace squad
+namespace Squad
 {
     public static class SoundEmitter
     {
@@ -18,10 +17,10 @@ namespace squad
             int count = Physics.OverlapSphereNonAlloc(
                 pos, sound.Radius, _hits, enemyLayer, QueryTriggerInteraction.Ignore);
 
-            if (!count)
+            if (count == 0)
                 return;
 
-            SquadBlackBoard.Instance.ReportSound(pos, sound);
+            SquadBlackboard.Instance.ReportSound(pos, sound);
         }
     }
 }

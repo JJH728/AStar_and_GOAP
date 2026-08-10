@@ -1,5 +1,4 @@
 using UnityEngine;
-using Systems.Collection.Generic;
 
 namespace Squad
 {
@@ -16,8 +15,8 @@ namespace Squad
         // 소리가 차원을 초월하는지
         public bool CanCrossDimension {get;}
 
-        public Sound(string name, float radius, float duration, 
-        SqaudBlackboard.AlertLevel alert, bool canCrossDimension)
+        public Sound(string name, float radius, float duration,
+        SquadBlackboard.AlertLevel alert, bool canCrossDimension)
         {
             Name = name;
             Radius = radius;
@@ -29,13 +28,13 @@ namespace Squad
 
     public static class SoundList
     {
-        public static readonly Sound Walking = 
-            new Sound("Walking", 5f, SquadBlackboard.AlertLevel.Suspicious, 0f, false);
-        public static readonly Sound Running = 
-            new Sound("Running", 10f, SquadBlackboard.AlertLevel.Suspicious, 0f, false);
-        public static readonly Sound Generator = 
-            new Sound("Generator", 15f, SquadBlackboard.AlertLevel.Alerted, 6f, true);
-        public static readonly Sound Decoy = 
-            new Sound("Decoy", 10f, SquadBlackboard.AlertLevel.Suspicious, 0f, false);
+        public static readonly Sound Walking =
+            new Sound("Walking", 5f, 0f, SquadBlackboard.AlertLevel.Suspicious, false);
+        public static readonly Sound Running =
+            new Sound("Running", 10f, 0f, SquadBlackboard.AlertLevel.Suspicious, false);
+        public static readonly Sound Generator =
+            new Sound("Generator", 15f, 6f, SquadBlackboard.AlertLevel.Alerted, true);
+        public static readonly Sound Decoy =
+            new Sound("Decoy", 10f, 0f, SquadBlackboard.AlertLevel.Suspicious, false);
     }
 }

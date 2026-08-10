@@ -4,15 +4,19 @@ namespace Squad
 {
     /// <summary>
     /// 플레이어가 움직이는 동안 주기적으로 발소리를 방출한다.
-    /// 이동 중일 때만, 그리고 일정 간격마다 SoundEmitter.Emit을 호출한다.
+    ///
+    /// 걷는지 뛰는지는 직접 계산하지 않고 Animator의 bool 파라미터를 읽는다.
+    /// Player 컨트롤러가 애니메이션을 위해 이미 판단해 둔 값이므로,
+    ///   - 같은 계산을 두 번 하지 않고
+    ///   - 애니메이션과 발소리가 항상 같은 상태를 공유한다
+    ///
+    /// 파라미터 의미(Player.cs 기준):
+    ///   isRun  = 움직이는 중인가 (moveVector != zero)
+    ///   isWalk = Walk 버튼을 눌러 천천히 걷는 중인가
+    /// 즉 기본이 뛰기이고, Walk 버튼을 누르면 걷기가 된다.
     ///
     /// 발소리는 "매 프레임"이 아니라 "발을 디딜 때마다"에 가깝게 내야
-    /// 자연스럽다. 그래서 stepInterval마다 한 번씩 낸다(걷기/뛰기 속도에
-    /// 따라 간격을 다르게 할 수도 있다).
-    ///
-    /// 이 스크립트는 "소리를 내는" 책임만 진다. 실제 이동(입력→위치 변경)은
-    /// 별도의 플레이어 컨트롤러가 담당하고, 여기서는 "지금 움직이는가"와
-    /// "얼마나 빨리 움직이는가"만 참고한다.
+    /// 자연스러우므로 interval마다 한 번씩 낸다.
     /// </summary>
     public class PlayerStep : MonoBehaviour
     {
@@ -20,47 +24,53 @@ namespace Squad
         [Tooltip("발소리를 들을 수 있는 적의 레이어")]
         [SerializeField] private LayerMask enemyLayer;
 
+        [Header("Animator")]
+        [Tooltip("플레이어의 Animator. 비워두면 자식에서 자동으로 찾는다")]
+        [SerializeField] private Animator animator;
+        [Tooltip("움직이는 중인지 나타내는 파라미터 이름")]
+        [SerializeField] private string movingParam = "isRun";
+        [Tooltip("천천히 걷는 중인지 나타내는 파라미터 이름")]
+        [SerializeField] private string walkParam = "isWalk";
+
         [Header("Footstep timing")]
-        [Tooltip("걷는 중 발소리 간격(초)")]
+        [Tooltip("걷는 중 발소리 간격(초). 느리게 걸으니 더 길게")]
         [SerializeField] private float walkInterval = 0.5f;
         [Tooltip("뛰는 중 발소리 간격(초). 더 짧게 = 더 자주")]
         [SerializeField] private float runInterval = 0.3f;
 
-        [Header("Movement source")]
-        [Tooltip("이 속도 이상이면 '움직이는 중'으로 본다")]
-        [SerializeField] private float walkThreshold = 0.1f;
-        [Tooltip("이 속도 이상이면 '뛰는 중'으로 본다")]
-        [SerializeField] private float runThreshold = 4f;
+        // 파라미터 이름을 매번 문자열로 넘기지 않도록 해시를 미리 구해 둔다.
+        private int _movingHash;
+        private int _walkHash;
 
-        private Vector3 _lastPosition;
         private float _stepTimer;
 
-        private void Start()
+        private void Awake()
         {
-            _lastPosition = transform.position;
+            // Player.cs와 같은 방식으로, 연결이 없으면 자식에서 찾는다.
+            if (animator == null)
+                animator = GetComponentInChildren<Animator>();
+
+            _movingHash = Animator.StringToHash(movingParam);
+            _walkHash = Animator.StringToHash(walkParam);
         }
 
         private void Update()
         {
-            // 이번 프레임의 이동 속도를 위치 변화로 추정한다.
-            // (전용 컨트롤러가 있으면 그쪽의 속도 값을 직접 받아도 된다.)
-            Vector3 delta = transform.position - _lastPosition;
-            delta.y = 0f;                          // 수평 이동만
-            float speed = delta.magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
-            _lastPosition = transform.position;
+            if (animator == null)
+                return;
 
-            // 멈춰 있으면 발소리 없음. 타이머도 리셋해서 다음 걸음이
-            // 바로(간격을 새로 채워) 나도록 한다.
-            if (speed < walkThreshold)
+            // 멈춰 있으면 발소리 없음. 타이머를 0으로 둬서 다시 움직이는
+            // 순간 첫 발소리가 바로 나도록 한다.
+            if (!animator.GetBool(_movingHash))
             {
                 _stepTimer = 0f;
                 return;
             }
 
-            // 속도에 따라 걷기/뛰기 소리와 간격을 고른다.
-            bool running = speed >= runThreshold;
-            Sound sound = running ? SoundList.Running : SoundList.Walking;
-            float interval = running ? runInterval : walkInterval;
+            // Walk 버튼을 눌렀으면 걷기, 아니면 뛰기.
+            bool walking = animator.GetBool(_walkHash);
+            Sound sound = walking ? SoundList.Walking : SoundList.Running;
+            float interval = walking ? walkInterval : runInterval;
 
             _stepTimer -= Time.deltaTime;
             if (_stepTimer <= 0f)
