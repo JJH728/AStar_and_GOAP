@@ -65,7 +65,8 @@ namespace Squad
                 _waypointIndex >= _path.Count ||
                 Vector3.Distance(_lastPathTarget, target) > repathThreshold)
             {
-                // pathfinder가 null인 실수가 일어났는지 검사 한 번 하기
+                // pathfinder가 null인 실수가 일어났는지 검사 후,
+                // path를 (재)생성
                 _path = pathfinder != null ?
                 pathfinder.FindPath(_rigidbody.position, target) : null;
                 _waypointIndex = 0;
