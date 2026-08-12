@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -37,6 +35,7 @@ public class Player : MonoBehaviour
     private float X_Axis;
     private float Y_velocity;
     private float Z_Axis;
+    private Vector3 horizontal;
     private bool isWalk;
     private bool isJump;
 
@@ -61,39 +60,46 @@ public class Player : MonoBehaviour
         X_Axis = Input.GetAxisRaw("Horizontal");
         Z_Axis = Input.GetAxisRaw("Vertical");
         isWalk = Input.GetButton("Walk"); // 왼쪽 shift 키
-        if (Input.GetButton("Jump"))
+
+        if (Input.GetButtonDown("Jump") && controller.isGrounded)
             isJump = true;
     }
 
-    // 플레이어를 움직인다
-    // 뛰는지 걷는지에 따라 속력을 달리하고,
-    // 애니메이션을 뛰는지 걷는지에 따라 변경한다
+    /// 1. 입력받은 x와 z, Walk키에 따라 수평 속도를 결정한다
+    /// 2. Jump를 입력받았다면 y 속도를 점프 초기 속도로 초기화한다
+    /// 3. 최종 결정된 속도로 캐릭터를 한 프레임 이동시킨다
+    /// 4. 이동 후 캐릭터가 공중에 떠있다면 y 속도를 감소시킨다
+    /// 5. 애니메이션을 뛰는지 걷는지에 따라 변경한다
     void Move()
     {
         horizontal = new Vector3(X_Axis, 0, Z_Axis).normalized;
         horizontal *= moveSpeed * (isWalk ? slowDownWhileWalk : 1f);
 
-        VerticalUpdate();
+        if (isJump)
+        {
+            // 점프 초기 속도는 v^2 = 2gh에 의해 결정
+            Y_velocity = Mathf.Sqrt(-2f * jumpHeight * gravity);
+            isJump = false;
+        }
 
         Vector3 velocity = horizontal + Vector3.up * Y_velocity;
-
-        animator.SetBool("isRun", moveVector != Vector3.zero);
+        controller.Move(velocity * Time.deltaTime);
+        
+        if (!controller.isGrounded)
+            Y_velocity += gravity * Time.deltaTime;
+        
+        animator.SetBool("isRun", horizontal != Vector3.zero);
         animator.SetBool("isWalk", isWalk);
-        animator.SetBool("isJump", !controller.isGrounded)
+        animator.SetBool("isInTheAir", !controller.isGrounded);
     }
 
     // 움직이고 있는 방향을 바라본다
     void Turn()
     {
         // 움직이지 않았다면 Turn을 실행하지 않는다
-        if (moveVector == Vector3.zero)
+        if (horizontal == Vector3.zero)
             return;
 
-        transform.LookAt(transform.position + moveVector);
-    }
-
-    void VerticalUpdate()
-    {
-        
+        transform.LookAt(transform.position + horizontal);
     }
 }
