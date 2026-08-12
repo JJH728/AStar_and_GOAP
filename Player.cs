@@ -68,8 +68,9 @@ public class Player : MonoBehaviour
     /// 1. 입력받은 x와 z, Walk키에 따라 수평 속도를 결정한다
     /// 2. Jump를 입력받았다면 y 속도를 점프 초기 속도로 초기화한다
     /// 3. 최종 결정된 속도로 캐릭터를 한 프레임 이동시킨다
-    /// 4. 이동 후 캐릭터가 공중에 떠있다면 y 속도를 감소시킨다
-    /// 5. 애니메이션을 뛰는지 걷는지에 따라 변경한다
+    /// 4. 이동 후 캐릭터가 공중에 떠있다면 y 속도를 감소시키고
+    ///    착지했다면 그에 맞게 처리한다
+    /// 5. 애니메이션을 상황에 맞게 적절히 적용한다
     void Move()
     {
         horizontal = new Vector3(X_Axis, 0, Z_Axis).normalized;
@@ -87,6 +88,12 @@ public class Player : MonoBehaviour
         
         if (!controller.isGrounded)
             Y_velocity += gravity * Time.deltaTime;
+        /// isGrounded가 true이면서 속도가 음수이다
+        /// = 착지했다
+        else if (Y_velocity < 0f)
+            /// 착지 후 미세하게 떠있는 것을 방지
+            /// 안정적으로 땅에 붙어있을 수 있게 한다
+            Y_velocity = -2f;
         
         animator.SetBool("isRun", horizontal != Vector3.zero);
         animator.SetBool("isWalk", isWalk);
@@ -100,6 +107,10 @@ public class Player : MonoBehaviour
         if (horizontal == Vector3.zero)
             return;
 
+        /// 참고 : horizontal은 speed가 곱해진 값이다
+        /// 즉 플레이어가 멀리 있는 지점을 바라보기 때문에
+        /// 경사를 오르는 상황에서는 예기치 못한 오류가 발생할 수 있다.
+        /// 버그가 발생한다면 speed가 곱해지기 전의 값을 가져올 것
         transform.LookAt(transform.position + horizontal);
     }
 }
