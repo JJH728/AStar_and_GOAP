@@ -57,9 +57,11 @@ namespace Squad
             if (_playerInRange && !IsActive && Input.GetKeyDown(interactKey))
                 Activate();
 
-            if (!IsActive) return;
+            if (!IsActive)
+                return;
 
             _emitTimer -= Time.deltaTime;
+
             if (_emitTimer <= 0f)
             {
                 SoundEmitter.Emit(transform.position, SoundList.Generator, enemyLayer);
@@ -71,7 +73,8 @@ namespace Squad
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!IsInLayerMask(other.gameObject.layer, playerLayer)) return;
+            if (!IsInLayerMask(other.gameObject.layer, playerLayer))
+                return;
 
             _playerInRange = true;
             ShowPromptIfNeeded();
@@ -79,7 +82,8 @@ namespace Squad
 
         private void OnTriggerExit(Collider other)
         {
-            if (!IsInLayerMask(other.gameObject.layer, playerLayer)) return;
+            if (!IsInLayerMask(other.gameObject.layer, playerLayer))
+                return;
 
             _playerInRange = false;
             HidePrompt();
@@ -88,7 +92,9 @@ namespace Squad
         // 이미 켜진 발전기에는 안내 문구를 띄우지 않는다.
         private void ShowPromptIfNeeded()
         {
-            if (IsActive) return;
+            if (IsActive)
+                return;
+            
             if (InteractionPrompt.Instance != null)
                 InteractionPrompt.Instance.Show(this, promptMessage);
         }
@@ -123,7 +129,8 @@ namespace Squad
             IsActive = false;
 
             // 꺼졌고 플레이어가 아직 범위 안이면 다시 안내를 띄운다.
-            if (_playerInRange) ShowPromptIfNeeded();
+            if (_playerInRange)
+                ShowPromptIfNeeded();
         }
     }
 }
