@@ -35,7 +35,8 @@ namespace Squad
         public void Show(object owner, string message)
         {
             _owner = owner;
-            if (promptText == null) return;
+            if (promptText == null)
+                return;
 
             promptText.text = message;
             promptText.gameObject.SetActive(true);
@@ -47,10 +48,13 @@ namespace Squad
         /// </summary>
         public void Hide(object owner)
         {
-            if (_owner != owner) return;
+            if (_owner != owner)
+                return;
+
             HideImmediate();
         }
 
+        // owner를 검사하지 않고 즉시 프롬프트를 비활성화
         private void HideImmediate()
         {
             _owner = null;
