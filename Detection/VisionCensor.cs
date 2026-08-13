@@ -131,4 +131,26 @@ namespace Squad
             visibleJustBefore = canSee;
         }
     }
+
+    private void OnDrawGizmosSelected()
+{
+    // 시야 거리 (원)
+    Gizmos.color = Color.gray;
+    Gizmos.DrawWireSphere(transform.position, viewDistance);
+
+    // 시야각 경계 (두 직선)
+    Vector3 left = Quaternion.Euler(0, -viewAngle * 0.5f, 0) * transform.forward;
+    Vector3 right = Quaternion.Euler(0, viewAngle * 0.5f, 0) * transform.forward;
+    Gizmos.DrawLine(transform.position, transform.position + left * viewDistance);
+    Gizmos.DrawLine(transform.position, transform.position + right * viewDistance);
+
+    // 플레이어까지의 레이 — 보이면 초록, 안 보이면 빨강
+    if (Application.isPlaying && player != null)
+    {
+        Vector3 eye = transform.position + Vector3.up * eyeHeight;
+        Vector3 target = player.position + Vector3.up * 1.2f;
+        Gizmos.color = visibleJustBefore ? Color.green : Color.red;
+        Gizmos.DrawLine(eye, target);
+    }
+}
 }
