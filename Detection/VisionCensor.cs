@@ -25,6 +25,7 @@ namespace Squad
         [SerializeField] private LayerMask obstacleLayer;
         // 플레이어
         [SerializeField] private Transform player;
+        [SerializeField] private float playerHeight = 1.2f;
         [Tooltip("detection을 얼마 정도의 주기로 하는가")]
         [SerializeField] private float detectInterval = 0.4f;
 
@@ -80,7 +81,17 @@ namespace Squad
         private bool HasLineOfSight(Transform target)
         {
             Vector3 eyePosition = transform.position + Vector3.up * eyeHeight;
-            Vector3 targetPoint = target.position + Vector3.up * 1.2f;
+            Vector3 targetPoint = target.position + Vector3.up * playerHeight;
+
+            /// 주의 : 플레이어가 벽 너머에서 점프하여 보이게 되면 적이 인식할 수 있는 상태
+            /// 인식하지 못하도록 하고 싶다면
+            /// 
+            /// // 플레이어의 실제 y 대신, 지면 기준 높이를 쓰기
+            /// Vector3 flatTarget = target.position;
+            /// flatTarget.y = transform.position.y;   // 추격자와 같은 지면 높이로
+            /// Vector3 targetPoint = flatTarget + Vector3.up * bodyHeight;
+            /// 
+            /// targetPoint 산출 코드를 위와 같이 변경하면 됨
 
             Vector3 direction = targetPoint - eyePosition;
             float distance = direction.magnitude;
